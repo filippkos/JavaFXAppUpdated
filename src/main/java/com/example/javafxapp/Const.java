@@ -9,4 +9,9 @@ public class Const {
     public static final String USERS_PASSWORD = "password";
     public static final String USERS_LOCATION = "location";
     public static final String USERS_GENDER = "gender";
+
+    public static final String TASKS_TASK = "gender";
+    public static final String TASKS_ID = "idtasks";
+    public static final String TASKS_START_DATE = "startdate";
+    public static final String TASKS_DEADLINE = "deadline";
 }

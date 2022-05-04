@@ -1,4 +1,4 @@
-package com.example.javafxapp;
+package com.example.javafxapp.models;
 
 public class User {
     private static String currentFirstName = "";

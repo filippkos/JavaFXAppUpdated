@@ -1,43 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #2E3348;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxapp.AppController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #2E3348;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxapp.controllers.AppController">
     <children>
-        <AnchorPane layoutY="100.0" prefHeight="300.0" prefWidth="700.0" style="-fx-background-color: #fafafa;">
-            <children>
-                <Accordion layoutX="25.0" layoutY="34.0" />
-            <Canvas height="256.0" layoutX="178.0" layoutY="22.0" width="345.0">
-               <cursor>
-                  <Cursor fx:constant="DEFAULT" />
-               </cursor>
-            </Canvas>
-            </children>
+        <AnchorPane layoutY="100.0" style="-fx-background-color: #fafafa;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+         <children>
+            <TabPane layoutX="12.0" layoutY="8.0" prefHeight="248.0" prefWidth="215.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <tabs>
+                <Tab fx:id="currentTab" text="Current">
+                  <content>
+                    <AnchorPane fx:id="currentTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <TableView fx:id="currentTable" layoutX="70.0" layoutY="42.0" prefHeight="200.0" prefWidth="509.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columns>
+                                  <TableColumn fx:id="currentTasksColumn" prefWidth="236.0" text="Current tasks" />
+                                  <TableColumn fx:id="startTimeColumn" minWidth="0.0" prefWidth="109.0" text="Start time" />
+                                    <TableColumn fx:id="deadlineColumn" prefWidth="117.0" text="Deadline" />
+                                    <TableColumn fx:id="editColumn" prefWidth="133.0" text="Edit" />
+                                    <TableColumn fx:id="timeLeftColumn" prefWidth="114.0" text="Time left" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                <Tab fx:id="doneTab" text="Done">
+                  <content>
+                    <AnchorPane fx:id="doneTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <TableView fx:id="doneTable" layoutX="139.0" layoutY="36.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columns>
+                                  <TableColumn fx:id="completedTasksColumn" prefWidth="386.0" text="Сompleted tasks" />
+                                  <TableColumn fx:id="completionTimeColumn" prefWidth="219.0" text="Completion time" />
+                                    <TableColumn fx:id="onTimeOrNotColumn" prefWidth="94.0" text="Оn time or not" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                  <Tab fx:id="canceledTab" text="Canceled">
+                     <content>
+                        <AnchorPane fx:id="canceledTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <TableView fx:id="cancelledTable" prefHeight="258.0" prefWidth="670.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <columns>
+                                    <TableColumn fx:id="cancelledTasksColumn" prefWidth="386.0" text="Cancelled tasks" />
+                                    <TableColumn fx:id="cancellationTimeColumn" prefWidth="219.0" text="Сancellation time" />
+                                    <TableColumn fx:id="reasonColumn" prefWidth="94.0" text="Reason" />
+                                 </columns>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+         </children>
         </AnchorPane>
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="250.0" layoutY="14.0" prefHeight="67.0" prefWidth="186.0" text="MyApp" textFill="WHITE">
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="250.0" layoutY="14.0" prefHeight="67.0" prefWidth="186.0" text="MyApp" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="14.0">
             <font>
                 <Font name="Bauhaus 93" size="60.0" />
             </font>
         </Label>
-      <Button fx:id="loginSignOutButton" layoutX="597.0" layoutY="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="89.0" style="-fx-background-color: #F39C63;" text="Sign Out" textFill="WHITE">
+      <Button fx:id="loginSignOutButton" layoutX="597.0" layoutY="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="89.0" style="-fx-background-color: #F39C63;" text="Sign Out" textFill="WHITE" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
          <font>
             <Font name="Bauhaus 93" size="16.0" />
          </font>
       </Button>
-          <Label fx:id="greetingsText" alignment="CENTER" contentDisplay="CENTER" layoutX="500.0" layoutY="48.0" prefHeight="41.0" prefWidth="186.0" text="Hello!" textFill="#f2f2f2">
+          <Label fx:id="greetingsText" alignment="CENTER" contentDisplay="CENTER" layoutX="500.0" layoutY="48.0" prefHeight="40.0" prefWidth="190.0" text="Hello!" textFill="#f2f2f2" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="55.0">
               <font>
                   <Font name="Bauhaus 93" size="24.0" />
               </font>
           </Label>
-      <ImageView fx:id="imageButtonGuitar" fitHeight="68.0" fitWidth="236.0" layoutX="14.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="imageButtonGuitar" fitHeight="68.0" fitWidth="236.0" layoutX="14.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
          <image>
             <Image url="@../../../assets/tele.png" />
          </image>

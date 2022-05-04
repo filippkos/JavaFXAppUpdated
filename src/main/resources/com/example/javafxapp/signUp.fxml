@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #2E3348;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxapp.SignUpController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #2E3348;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxapp.controllers.SignUpController">
     <children>
-        <AnchorPane layoutY="100.0" prefHeight="300.0" prefWidth="700.0" style="-fx-background-color: #fafafa;">
+        <AnchorPane layoutY="100.0" style="-fx-background-color: #fafafa;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
             <children>
                 <TextField fx:id="login_field" layoutX="107.0" layoutY="80.0" promptText="Login" style="-fx-background-color: #fafafa; -fx-border-color: silver; -fx-border-radius: 5;">
                     <font>
@@ -54,12 +54,12 @@
             </RadioButton>
             </children>
         </AnchorPane>
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="250.0" layoutY="14.0" prefHeight="67.0" prefWidth="186.0" text="MyApp" textFill="WHITE">
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="250.0" layoutY="14.0" prefHeight="67.0" prefWidth="186.0" text="MyApp" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <font>
                 <Font name="Bauhaus 93" size="60.0" />
             </font>
         </Label>
-      <Button fx:id="loginBackButton" layoutX="597.0" layoutY="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="89.0" style="-fx-background-color: #F39C63;" text="Back" textFill="WHITE">
+      <Button fx:id="loginBackButton" layoutX="597.0" layoutY="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="89.0" style="-fx-background-color: #F39C63;" text="Back" textFill="WHITE" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
          <font>
             <Font name="Bauhaus 93" size="16.0" />
          </font>

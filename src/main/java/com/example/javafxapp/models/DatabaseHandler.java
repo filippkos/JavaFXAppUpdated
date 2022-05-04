@@ -1,4 +1,7 @@
-package com.example.javafxapp;
+package com.example.javafxapp.models;
+
+import com.example.javafxapp.Configs;
+import com.example.javafxapp.Const;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
