@@ -1,6 +1,7 @@
 package com.example.javafxapp.controllers;
 
 import com.example.javafxapp.models.DatabaseHandler;
+import com.example.javafxapp.models.Task;
 import com.example.javafxapp.models.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class SignUpController {
@@ -111,7 +113,7 @@ public class SignUpController {
 
         dbHandler.signUpUser(user);
 
-
     }
+
 
 }

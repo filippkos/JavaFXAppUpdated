@@ -2,12 +2,9 @@ package com.example.javafxapp.models;
 
 import com.example.javafxapp.Configs;
 import com.example.javafxapp.Const;
+import javafx.scene.control.TableView;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.ResultSet;
+import java.sql.*;
 
 public class DatabaseHandler extends Configs {
     Connection dbConnection;
@@ -46,6 +43,11 @@ public class DatabaseHandler extends Configs {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @return Подготовленный сет из базы данных
+     */
     public ResultSet getUser(User user) {
         ResultSet resSet = null;
 
@@ -64,4 +66,53 @@ public class DatabaseHandler extends Configs {
 
         return  resSet;
     }
+
+    public void addTaskToTable(Task task) {
+        String insert = "INSERT INTO " + Const.TASKS_TABLE + "(" +
+                Const.TASKS_TASK + ")" +
+                "VALUES(?)";
+
+        try {
+            PreparedStatement prSt = getDbConnection().prepareStatement(insert);
+            prSt.setString(1, task.getTask());
+//            prSt.setDate(2, (Date) task.getCurrentTime());
+//            prSt.setDate(3, (Date) task.getDeadline());
+
+            prSt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void editTask (Task task) {
+
+        String update = "UPDATE " + Const.TASKS_TABLE + " SET " +
+                Const.TASKS_TASK + " = " + "\"" + task.getTask() + "\"" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+
+        try {
+            getDbConnection().createStatement().executeUpdate(update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public ResultSet getTaskTable() {
+        ResultSet resSet = null;
+        String select = "SELECT * FROM " + Const.TASKS_TABLE;
+        try {
+            resSet = getDbConnection().createStatement().executeQuery(select);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resSet;
+    }
+
 }

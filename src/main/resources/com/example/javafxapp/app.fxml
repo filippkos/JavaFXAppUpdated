@@ -6,8 +6,6 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
@@ -23,11 +21,12 @@
                            <children>
                               <TableView fx:id="currentTable" layoutX="70.0" layoutY="42.0" prefHeight="200.0" prefWidth="509.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <columns>
-                                  <TableColumn fx:id="currentTasksColumn" prefWidth="236.0" text="Current tasks" />
-                                  <TableColumn fx:id="startTimeColumn" minWidth="0.0" prefWidth="109.0" text="Start time" />
-                                    <TableColumn fx:id="deadlineColumn" prefWidth="117.0" text="Deadline" />
-                                    <TableColumn fx:id="editColumn" prefWidth="133.0" text="Edit" />
-                                    <TableColumn fx:id="timeLeftColumn" prefWidth="114.0" text="Time left" />
+                                    <TableColumn fx:id="currentIdColumn" minWidth="0.0" prefWidth="34.0" text="Id" />
+                                  <TableColumn fx:id="currentTasksColumn" prefWidth="274.0" text="Current tasks" />
+                                  <TableColumn fx:id="startTimeColumn" minWidth="0.0" prefWidth="118.0" text="Start time" />
+                                    <TableColumn fx:id="deadlineColumn" prefWidth="143.0" text="Deadline" />
+                                    <TableColumn fx:id="editColumn" prefWidth="130.0" text="Edit" />
+                                    <TableColumn fx:id="timeLeftColumn" prefWidth="119.0" text="Time left" />
                                 </columns>
                               </TableView>
                            </children>
@@ -68,7 +67,7 @@
             </TabPane>
          </children>
         </AnchorPane>
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="250.0" layoutY="14.0" prefHeight="67.0" prefWidth="186.0" text="MyApp" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="14.0">
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="250.0" layoutY="14.0" prefHeight="67.0" prefWidth="186.0" text="ToDoApp" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="14.0">
             <font>
                 <Font name="Bauhaus 93" size="60.0" />
             </font>
@@ -83,10 +82,10 @@
                   <Font name="Bauhaus 93" size="24.0" />
               </font>
           </Label>
-      <ImageView fx:id="imageButtonGuitar" fitHeight="68.0" fitWidth="236.0" layoutX="14.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
-         <image>
-            <Image url="@../../../assets/tele.png" />
-         </image>
-      </ImageView>
+      <Button fx:id="addTaskButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="89.0" style="-fx-background-color: #F39C63;" text="Add Task" textFill="WHITE" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
+         <font>
+            <Font name="Bauhaus 93" size="16.0" />
+         </font>
+      </Button>
     </children>
 </AnchorPane>

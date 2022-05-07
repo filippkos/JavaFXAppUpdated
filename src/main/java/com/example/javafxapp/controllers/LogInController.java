@@ -85,7 +85,6 @@ public class LogInController {
         //Просто считаем кол-во строк.
             try {
 
-
                 String name = "";
                 while(result.next()) {
                     name = result.getString("firstname");

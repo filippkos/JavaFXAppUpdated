@@ -1,18 +1,25 @@
 package com.example.javafxapp.controllers;
 
+import com.example.javafxapp.models.DatabaseHandler;
 import com.example.javafxapp.models.Task;
 import com.example.javafxapp.models.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -23,6 +30,9 @@ public class AppController {
 
     @FXML
     private URL location;
+
+    @FXML
+    private Button addTaskButton;
 
     @FXML
     private Tab currentTab;
@@ -40,43 +50,13 @@ public class AppController {
     private TableColumn<Task, Date> deadlineColumn;
 
     @FXML
-    private TableColumn<?, ?> timeLeftColumn;
-
-    @FXML
-    private TableColumn<?, ?> editColumn;
-
-    @FXML
-    private Tab canceledTab;
-
-    @FXML
-    private AnchorPane canceledTabAnchorPane;
-
-    @FXML
-    private TableColumn<?, ?> cancellationTimeColumn;
-
-    @FXML
-    private TableView<?> cancelledTable;
-
-    @FXML
-    private TableColumn<?, ?> cancelledTasksColumn;
-
-    @FXML
-    private TableColumn<?, ?> completedTasksColumn;
-
-    @FXML
-    private TableColumn<?, ?> completionTimeColumn;
-
-    @FXML
-    private Tab doneTab;
-
-    @FXML
-    private AnchorPane doneTabAnchorPane;
-
-    @FXML
-    private TableView<?> doneTable;
+    private TableColumn<Task, Button> editColumn;
 
     @FXML
     private Label greetingsText;
+
+    @FXML
+    private TableColumn<Task, String> currentIdColumn;
 
     @FXML
     private ImageView imageButtonGuitar;
@@ -93,11 +73,11 @@ public class AppController {
     @FXML
     private TableColumn<Task, Date> startTimeColumn;
 
-//    ObservableList<Task> tasks = FXCollections.observableArrayList(
-//            new Task("Научиться программированию",new Date(),new Date(1212121212121L),new Date(1212121212121L),new Date(), true),
-//            new Task("Заработать бабла",new Date(),new Date(1212121212121L),new Date(1212121212121L),new Date(), true)
-//    );
+    ObservableList<Task> tasks = FXCollections.observableArrayList();
 
+    /**
+     * Инициализация контроллера
+     */
     @FXML
     void initialize() {
         greetingsText.setText("Hello, " + User.getCurrentFirstName() + "!");
@@ -106,15 +86,56 @@ public class AppController {
             openNewScene("/com/example/javafxapp/hello-view.fxml");
         });
 
-//        currentTasksColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("task"));
-//        startTimeColumn.setCellValueFactory(new PropertyValueFactory<Task, Date>("currentTime"));
-//        deadlineColumn.setCellValueFactory(new PropertyValueFactory<Task, Date>("deadline"));
-//
-//        currentTable.setItems(tasks);
 
+        initCols();
+        currentTable.setItems(tasks);
 
-
+        addTaskButton.setOnAction(event ->{
+            //addNewTaskToTable();
+        });
     }
+
+    /**
+     * Надо, чтобы данные загружались из БД
+     */
+    private void initCols(){
+        getAllTasks();
+        currentIdColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("id"));
+        currentTasksColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("task"));
+
+        editableCols();
+    }
+
+    /**
+     * Достать все таски из ДБ и положить в ТАСКС лист
+     */
+    private void getAllTasks() {
+        ResultSet rs = new DatabaseHandler().getTaskTable();
+            try {
+                while (rs.next()) {
+                    tasks.add(new Task(rs.getString("idtask"), rs.getString("task")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+    }
+
+
+    /**
+     * Надо реализовать редактирование записи с апдейтом в БД
+     */
+    private void editableCols() {
+        currentTasksColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        currentTasksColumn.setOnEditCommit(event ->{
+            String id = event.getTableView().getItems().get(event.getTablePosition().getRow()).getId();
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setTask(event.getNewValue());
+
+            /** метод редактирования */
+            editTaskInTable(id, event.getNewValue());
+        });
+        currentTable.setEditable(true);
+    }
+
 
     private void openNewScene(String window) {
         loginSignOutButton.getScene().getWindow().hide();
@@ -132,6 +153,24 @@ public class AppController {
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.show();
+    }
+
+    /**
+     * Надо загружать ТАСК в БД
+     */
+    private void addNewTaskToTable(String id, String text) {
+        DatabaseHandler dbHandler = new DatabaseHandler();
+        Task task = new Task(id, text);
+        dbHandler.addTaskToTable(task);
+    }
+
+    /**
+     * Надо редактировать определённый ТАСК в БД
+     */
+    private void editTaskInTable(String id, String newTask) {
+        DatabaseHandler dbHandler = new DatabaseHandler();
+        Task task = new Task(id, newTask);
+        dbHandler.editTask(task);
     }
 
 }

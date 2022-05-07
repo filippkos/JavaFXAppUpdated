@@ -1,51 +1,67 @@
 package com.example.javafxapp.models;
 
-import java.time.Period;
+import javafx.scene.control.Button;
+
 import java.util.Date;
 
 public class Task {
+    private String id;
     private String task;
     private Date currentTime;
     private Date deadline;
-    private Date completionTime;
-    private Date cancellationTime;
-    private Period timeLeft;
-    private boolean inTimeOrNot;
+    private Button delete;
 
-    public Task(String task, Date currentTime, Date deadline, Date completionTime, Date cancellationTime, boolean inTimeOrNot) {
+    public Task(String id, String task, Date currentTime, Date deadline, Button delete) {
+        this.id = id;
         this.task = task;
         this.currentTime = currentTime;
         this.deadline = deadline;
-        this.completionTime = completionTime;
-        this.cancellationTime = cancellationTime;
-        this.inTimeOrNot = inTimeOrNot;
+        this.delete = delete;
+    }
+
+    public Task(String id, String task) {
+        this.id = id;
+        this.task = task;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTask() {
         return task;
     }
 
+    public void setTask(String task) {
+        this.task = task;
+    }
+
     public Date getCurrentTime() {
         return currentTime;
+    }
+
+    public void setCurrentTime(Date currentTime) {
+        this.currentTime = currentTime;
     }
 
     public Date getDeadline() {
         return deadline;
     }
 
-    public Date getCompletionTime() {
-        return completionTime;
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
     }
 
-    public Date getCancellationTime() {
-        return cancellationTime;
+    public Button getDelete() {
+        return delete;
     }
 
-    public boolean isInTimeOrNot() {
-        return inTimeOrNot;
+    public void setDelete(Button delete) {
+        this.delete = delete;
     }
-
-//    public Period getTimeLeft() {
-//        return Period.between(deadline, currentTime);
-//    }
 }
