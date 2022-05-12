@@ -67,15 +67,15 @@ public class DatabaseHandler extends Configs {
         return  resSet;
     }
 
-    public void addTaskToTable(Task task) {
+    public void addTaskToDb(Task task) {
         String insert = "INSERT INTO " + Const.TASKS_TABLE + "(" +
-                Const.TASKS_TASK + ")" +
-                "VALUES(?)";
+                Const.TASKS_TASK + "," + Const.TASKS_STATE + ")" +
+                "VALUES(?,?)";
 
         try {
             PreparedStatement prSt = getDbConnection().prepareStatement(insert);
             prSt.setString(1, task.getTask());
-//            prSt.setDate(2, (Date) task.getCurrentTime());
+            prSt.setString(2, "current");
 //            prSt.setDate(3, (Date) task.getDeadline());
 
             prSt.executeUpdate();
@@ -86,7 +86,7 @@ public class DatabaseHandler extends Configs {
         }
     }
 
-    public void editTask (Task task) {
+    public void editTaskInDb(Task task) {
 
         String update = "UPDATE " + Const.TASKS_TABLE + " SET " +
                 Const.TASKS_TASK + " = " + "\"" + task.getTask() + "\"" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
@@ -101,7 +101,20 @@ public class DatabaseHandler extends Configs {
 
     }
 
-    public ResultSet getTaskTable() {
+    public void removeTaskFromDb(Task task) {
+        String delete = "DELETE FROM " + Const.TASKS_TABLE + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+
+        try {
+            getDbConnection().createStatement().executeUpdate(delete);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public ResultSet getTaskTableFromDb() {
         ResultSet resSet = null;
         String select = "SELECT * FROM " + Const.TASKS_TABLE;
         try {

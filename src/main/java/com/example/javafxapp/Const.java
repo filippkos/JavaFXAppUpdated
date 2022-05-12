@@ -13,6 +13,7 @@ public class Const {
     public static final String TASKS_TABLE = "tasks";
     public static final String TASKS_TASK = "task";
     public static final String TASKS_ID = "idtask";
+    public static final String TASKS_STATE = "state";
     public static final String TASKS_START_DATE = "startdate";
     public static final String TASKS_DEADLINE = "deadline";
 }

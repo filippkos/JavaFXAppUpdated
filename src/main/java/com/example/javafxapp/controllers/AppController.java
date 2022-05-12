@@ -12,15 +12,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AppController {
@@ -35,6 +35,33 @@ public class AppController {
     private Button addTaskButton;
 
     @FXML
+    private AnchorPane appPane;
+
+    @FXML
+    private Tab canceledTab;
+
+    @FXML
+    private AnchorPane canceledTabAnchorPane;
+
+    @FXML
+    private TableColumn<?, ?> cancellationTimeColumn;
+
+    @FXML
+    private TableView<Task> cancelledTable;
+
+    @FXML
+    private TableColumn<Task, String> cancelledTasksColumn;
+
+    @FXML
+    private TableColumn<Task, String> completedTasksColumn;
+
+    @FXML
+    private TableColumn<?, ?> completionTimeColumn;
+
+    @FXML
+    private TableColumn<Task, String> currentIdColumn;
+
+    @FXML
     private Tab currentTab;
 
     @FXML
@@ -47,33 +74,53 @@ public class AppController {
     private TableColumn<Task, String> currentTasksColumn;
 
     @FXML
-    private TableColumn<Task, Date> deadlineColumn;
+    private TableColumn<?, ?> deadlineColumn;
 
     @FXML
-    private TableColumn<Task, Button> editColumn;
+    private Tab doneTab;
+
+    @FXML
+    private AnchorPane doneTabAnchorPane;
+
+    @FXML
+    private TableView<Task> doneTable;
+
+    @FXML
+    private TableColumn<Task, HBox> editColumn;
 
     @FXML
     private Label greetingsText;
 
     @FXML
-    private TableColumn<Task, String> currentIdColumn;
-
-    @FXML
-    private ImageView imageButtonGuitar;
-
-    @FXML
     private Button loginSignOutButton;
 
     @FXML
-    private TableColumn<Task, Boolean> onTimeOrNotColumn;
+    private TableColumn<?, ?> onTimeOrNotColumn;
 
     @FXML
     private TableColumn<?, ?> reasonColumn;
 
     @FXML
-    private TableColumn<Task, Date> startTimeColumn;
+    private TableColumn<?, ?> startTimeColumn;
 
-    ObservableList<Task> tasks = FXCollections.observableArrayList();
+    @FXML
+    private TableColumn<?, ?> timeLeftColumn;
+
+
+    ObservableList<Task> currentTasks = FXCollections.observableArrayList();
+    ObservableList<Task> doneTasks = FXCollections.observableArrayList();
+    ObservableList<Task> cancelledTasks = FXCollections.observableArrayList();
+
+
+    class myThread implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                currentTabAnchorPane.requestLayout();
+            }
+        }
+    }
 
     /**
      * Инициализация контроллера
@@ -81,39 +128,80 @@ public class AppController {
     @FXML
     void initialize() {
         greetingsText.setText("Hello, " + User.getCurrentFirstName() + "!");
-        assert imageButtonGuitar != null : "fx:id=\"imageButtonGuitar\" was not injected: check your FXML file 'app.fxml'.";
         loginSignOutButton.setOnAction(event ->{
             openNewScene("/com/example/javafxapp/hello-view.fxml");
         });
 
-
+        getAllTasks();
         initCols();
-        currentTable.setItems(tasks);
+        editableCols();
+        currentTable.setItems(currentTasks);
+        doneTable.setItems(doneTasks);
+        cancelledTable.setItems(cancelledTasks);
+        Thread newTh = new Thread(new myThread());
+        newTh.start();
 
         addTaskButton.setOnAction(event ->{
-            //addNewTaskToTable();
+            TextInputDialog newTaskDial = new TextInputDialog();
+            newTaskDial.setTitle("New task creation");
+            newTaskDial.setGraphic(null);
+            newTaskDial.setHeaderText(null);
+            newTaskDial.setContentText("Text: ");
+            Optional<String> result = newTaskDial.showAndWait();
+            if (result.isPresent()) {
+                addNewTaskToDbTable(result.get());
+            } else {
+                newTaskDial.close();
+            }
         });
     }
+
 
     /**
      * Надо, чтобы данные загружались из БД
      */
     private void initCols(){
-        getAllTasks();
         currentIdColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("id"));
         currentTasksColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("task"));
-
-        editableCols();
+        editColumn.setCellValueFactory(new PropertyValueFactory<Task, HBox>("edit"));
+        completedTasksColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("task"));
+        cancelledTasksColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("task"));
     }
 
     /**
      * Достать все таски из ДБ и положить в ТАСКС лист
      */
     private void getAllTasks() {
-        ResultSet rs = new DatabaseHandler().getTaskTable();
+        ResultSet rs = new DatabaseHandler().getTaskTableFromDb();
             try {
                 while (rs.next()) {
-                    tasks.add(new Task(rs.getString("idtask"), rs.getString("task")));
+                    if(rs.getString("state").equals("current")) {
+                        currentTasks.add(new Task(rs.getString("idtask"),
+                                rs.getString("task"),
+                                rs.getString("state"),
+                                new HBox(),
+                                new Button("done"),
+                                new Button("cancel"),
+                                new Button("remove")));
+                    }
+                    if(rs.getString("state").equals("done")) {
+                        doneTasks.add(new Task(rs.getString("idtask"),
+                                rs.getString("task"),
+                                rs.getString("state"),
+                                new HBox(),
+                                new Button("done"),
+                                new Button("cancel"),
+                                new Button("remove")));
+                    }
+                    if(rs.getString("state").equals("cancelled")) {
+                        cancelledTasks.add(new Task(rs.getString("idtask"),
+                                rs.getString("task"),
+                                rs.getString("state"),
+                                new HBox(),
+                                new Button("done"),
+                                new Button("cancel"),
+                                new Button("remove")));
+                    }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -128,10 +216,14 @@ public class AppController {
         currentTasksColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         currentTasksColumn.setOnEditCommit(event ->{
             String id = event.getTableView().getItems().get(event.getTablePosition().getRow()).getId();
+            Button done = event.getTableView().getItems().get(event.getTablePosition().getRow()).getDone();
+            Button cancel = event.getTableView().getItems().get(event.getTablePosition().getRow()).getCancel();
+            Button remove = event.getTableView().getItems().get(event.getTablePosition().getRow()).getRemove();
             event.getTableView().getItems().get(event.getTablePosition().getRow()).setTask(event.getNewValue());
 
+
             /** метод редактирования */
-            editTaskInTable(id, event.getNewValue());
+            editTaskInDbTable(id, event.getNewValue(), done, cancel, remove);
         });
         currentTable.setEditable(true);
     }
@@ -158,19 +250,27 @@ public class AppController {
     /**
      * Надо загружать ТАСК в БД
      */
-    private void addNewTaskToTable(String id, String text) {
+    private void addNewTaskToDbTable(String text) {
         DatabaseHandler dbHandler = new DatabaseHandler();
-        Task task = new Task(id, text);
-        dbHandler.addTaskToTable(task);
+        Task task = new Task(text);
+        dbHandler.addTaskToDb(task);
     }
 
     /**
      * Надо редактировать определённый ТАСК в БД
      */
-    private void editTaskInTable(String id, String newTask) {
+    private void editTaskInDbTable(String id, String newTask, Button done, Button cancel, Button remove) {
         DatabaseHandler dbHandler = new DatabaseHandler();
-        Task task = new Task(id, newTask);
-        dbHandler.editTask(task);
+        Task task = new Task(id, newTask, done, cancel, remove);
+        dbHandler.editTaskInDb(task);
+    }
+
+    /**
+     * Надо удалить определённый ТАСК из БД
+     */
+    private void removeTaskFromDbTable(Task task) {
+        DatabaseHandler dbHandler = new DatabaseHandler();
+        dbHandler.removeTaskFromDb(task);
     }
 
 }

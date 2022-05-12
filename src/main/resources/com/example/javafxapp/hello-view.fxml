@@ -35,7 +35,7 @@
             <Accordion layoutX="25.0" layoutY="34.0" />
          </children>
       </AnchorPane>
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="257.0" layoutY="14.0" style="-fx-background-color: #2E3348;" text="MyApp" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="14.0">
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="257.0" layoutY="14.0" style="-fx-background-color: #2E3348;" text="ToDoApp" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="14.0">
          <font>
             <Font name="Bauhaus 93" size="60.0" />
          </font>
