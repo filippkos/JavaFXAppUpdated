@@ -75,7 +75,7 @@ public class DatabaseHandler extends Configs {
         try {
             PreparedStatement prSt = getDbConnection().prepareStatement(insert);
             prSt.setString(1, task.getTask());
-            prSt.setString(2, "current");
+            prSt.setString(2, TaskState.CURRENT.getTitle());
 //            prSt.setDate(3, (Date) task.getDeadline());
 
             prSt.executeUpdate();

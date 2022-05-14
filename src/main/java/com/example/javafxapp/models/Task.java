@@ -1,5 +1,6 @@
 package com.example.javafxapp.models;
 
+import com.example.javafxapp.controllers.AppController;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
@@ -45,6 +46,11 @@ public class Task {
 
         edit.getChildren().addAll(done, cancel, remove);
         edit.setSpacing(5);
+        handleButtonActions();
+
+    }
+
+    public final void handleButtonActions(){
         done.setOnAction(event ->{
             System.out.println("done");
         });
@@ -52,7 +58,7 @@ public class Task {
             System.out.println("cancel");
         });
         remove.setOnAction(event ->{
-
+            System.out.println("remove");
         });
     }
 

@@ -56,6 +56,9 @@ public class AppController {
     private TableColumn<Task, String> completedTasksColumn;
 
     @FXML
+    private TableColumn<?, ?> CompletedDeadlineColumn;
+
+    @FXML
     private TableColumn<?, ?> completionTimeColumn;
 
     @FXML
@@ -111,17 +114,6 @@ public class AppController {
     ObservableList<Task> doneTasks = FXCollections.observableArrayList();
     ObservableList<Task> cancelledTasks = FXCollections.observableArrayList();
 
-
-    class myThread implements Runnable {
-
-        @Override
-        public void run() {
-            while (true) {
-                currentTabAnchorPane.requestLayout();
-            }
-        }
-    }
-
     /**
      * Инициализация контроллера
      */
@@ -135,27 +127,29 @@ public class AppController {
         getAllTasks();
         initCols();
         editableCols();
-        currentTable.setItems(currentTasks);
-        doneTable.setItems(doneTasks);
-        cancelledTable.setItems(cancelledTasks);
-        Thread newTh = new Thread(new myThread());
-        newTh.start();
 
         addTaskButton.setOnAction(event ->{
-            TextInputDialog newTaskDial = new TextInputDialog();
-            newTaskDial.setTitle("New task creation");
-            newTaskDial.setGraphic(null);
-            newTaskDial.setHeaderText(null);
-            newTaskDial.setContentText("Text: ");
-            Optional<String> result = newTaskDial.showAndWait();
+            Optional<String> result = getPopupDialogueWindow().showAndWait();
             if (result.isPresent()) {
                 addNewTaskToDbTable(result.get());
-            } else {
-                newTaskDial.close();
+                initCols();
+                getAllTasks();
             }
         });
+
     }
 
+    /**
+     * Создаёт всплывающее окно с текстовым полем для ввода нового ТАСКа
+     */
+    private TextInputDialog getPopupDialogueWindow(){
+        TextInputDialog newInputDialogue = new TextInputDialog();
+        newInputDialogue.setTitle("New task creation");
+        newInputDialogue.setGraphic(null);
+        newInputDialogue.setHeaderText(null);
+        newInputDialogue.setContentText("Text: ");
+        return newInputDialogue;
+    }
 
     /**
      * Надо, чтобы данные загружались из БД
@@ -166,6 +160,14 @@ public class AppController {
         editColumn.setCellValueFactory(new PropertyValueFactory<Task, HBox>("edit"));
         completedTasksColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("task"));
         cancelledTasksColumn.setCellValueFactory(new PropertyValueFactory<Task, String>("task"));
+
+        currentTable.getItems().clear();
+        doneTable.getItems().clear();
+        cancelledTable.getItems().clear();
+
+        currentTable.setItems(currentTasks);
+        doneTable.setItems(doneTasks);
+        cancelledTable.setItems(cancelledTasks);
     }
 
     /**
@@ -208,7 +210,6 @@ public class AppController {
             }
     }
 
-
     /**
      * Надо реализовать редактирование записи с апдейтом в БД
      */
@@ -227,7 +228,6 @@ public class AppController {
         });
         currentTable.setEditable(true);
     }
-
 
     private void openNewScene(String window) {
         loginSignOutButton.getScene().getWindow().hide();
