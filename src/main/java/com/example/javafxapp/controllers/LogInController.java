@@ -55,7 +55,6 @@ public class LogInController {
                 System.out.println("Login and pass is empty");
         });
 
-
         loginSignUpButton.setOnAction(event ->{
             openNewScene("/com/example/javafxapp/signUp.fxml");
         });

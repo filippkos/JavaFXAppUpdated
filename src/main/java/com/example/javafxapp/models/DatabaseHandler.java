@@ -2,7 +2,6 @@ package com.example.javafxapp.models;
 
 import com.example.javafxapp.Configs;
 import com.example.javafxapp.Const;
-import javafx.scene.control.TableView;
 
 import java.sql.*;
 
@@ -67,14 +66,13 @@ public class DatabaseHandler extends Configs {
         return  resSet;
     }
 
-    public void addTaskToDb(Task task) {
+    public void addTaskToDb(userTask userTask) {
         String insert = "INSERT INTO " + Const.TASKS_TABLE + "(" +
                 Const.TASKS_TASK + "," + Const.TASKS_STATE + ")" +
                 "VALUES(?,?)";
-
         try {
             PreparedStatement prSt = getDbConnection().prepareStatement(insert);
-            prSt.setString(1, task.getTask());
+            prSt.setString(1, userTask.getTask());
             prSt.setString(2, TaskState.CURRENT.getTitle());
 //            prSt.setDate(3, (Date) task.getDeadline());
 
@@ -86,8 +84,19 @@ public class DatabaseHandler extends Configs {
         }
     }
 
-    public void editTaskInDb(Task task) {
+    public void editTaskStateInDb(userTask task, String state) {
+        String update = "UPDATE " + Const.TASKS_TABLE + " SET " +
+                Const.TASKS_STATE + " = " + "\"" + state + "\"" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+        try {
+            getDbConnection().createStatement().executeUpdate(update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void editTaskInDb(userTask task) {
         String update = "UPDATE " + Const.TASKS_TABLE + " SET " +
                 Const.TASKS_TASK + " = " + "\"" + task.getTask() + "\"" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
 
@@ -101,8 +110,8 @@ public class DatabaseHandler extends Configs {
 
     }
 
-    public void removeTaskFromDb(Task task) {
-        String delete = "DELETE FROM " + Const.TASKS_TABLE + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+    public void removeTaskFromDb(userTask userTask) {
+        String delete = "DELETE FROM " + Const.TASKS_TABLE + " WHERE " + Const.TASKS_ID + " = " + "\"" + userTask.getId() + "\"";
 
         try {
             getDbConnection().createStatement().executeUpdate(delete);
