@@ -10,18 +10,21 @@ public class userTask {
     private String id;
     private String task;
     private String state;
+    private Date startTime;
+    private Date deadline;
+    private Date completionTime;
 
-
-
-    public userTask(String task) {
+    public userTask(String task, Date deadline) {
         this.task = task;
+        this.deadline = deadline;
     }
 
-    public userTask(String id, String task, String state) {
+    public userTask(String id, String task, String state, Date startTime, Date deadline) {
         this.id = id;
         this.task = task;
         this.state = state;
-
+        this.startTime = startTime;
+        this.deadline = deadline;
     }
 
 
@@ -30,6 +33,8 @@ public class userTask {
         this.task = task;
 
     }
+
+
 
     public String getId() {
         return id;
@@ -53,5 +58,21 @@ public class userTask {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
     }
 }

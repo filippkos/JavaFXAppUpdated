@@ -66,15 +66,16 @@ public class DatabaseHandler extends Configs {
         return  resSet;
     }
 
-    public void addTaskToDb(userTask userTask) {
+    public void addTaskToDb(userTask task) {
         String insert = "INSERT INTO " + Const.TASKS_TABLE + "(" +
-                Const.TASKS_TASK + "," + Const.TASKS_STATE + ")" +
-                "VALUES(?,?)";
+                Const.TASKS_TASK + "," + Const.TASKS_STATE + "," + Const.TASKS_START_DATE + "," + Const.TASKS_DEADLINE + ")" +
+                "VALUES(?,?,NOW(),?)";
         try {
             PreparedStatement prSt = getDbConnection().prepareStatement(insert);
-            prSt.setString(1, userTask.getTask());
+            prSt.setString(1, task.getTask());
             prSt.setString(2, TaskState.CURRENT.getTitle());
-//            prSt.setDate(3, (Date) task.getDeadline());
+            prSt.setDate(3, new Date(task.getDeadline().getTime()));
+
 
             prSt.executeUpdate();
         } catch (SQLException e) {
@@ -85,8 +86,16 @@ public class DatabaseHandler extends Configs {
     }
 
     public void editTaskStateInDb(userTask task, String state) {
-        String update = "UPDATE " + Const.TASKS_TABLE + " SET " +
-                Const.TASKS_STATE + " = " + "\"" + state + "\"" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+        String update = "";
+        if(state.equals(TaskState.DONE.getTitle())) {
+            update = "UPDATE " + Const.TASKS_TABLE + " SET " +
+                    Const.TASKS_STATE + " = " + "\"" + state + "\"" + ", " + Const.TASKS_COMPLETION_TIME + " = " + "NOW()" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+        }
+        if(state.equals(TaskState.CANCELLED.getTitle())) {
+            update = "UPDATE " + Const.TASKS_TABLE + " SET " +
+                    Const.TASKS_STATE + " = " + "\"" + state + "\"" + ", " + Const.TASKS_CANCELLATION_TIME + " = " + "NOW()" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+        }
+
         try {
             getDbConnection().createStatement().executeUpdate(update);
         } catch (SQLException e) {
@@ -134,6 +143,19 @@ public class DatabaseHandler extends Configs {
             e.printStackTrace();
         }
 
+        return resSet;
+    }
+
+    public ResultSet getTheLastTaskFromDb() {
+        ResultSet resSet = null;
+        String select = "SELECT * FROM " + Const.TASKS_TABLE + " ORDER BY " + Const.TASKS_ID + " DESC LIMIT 0, 1";
+        try {
+            resSet = getDbConnection().createStatement().executeQuery(select);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return resSet;
     }
 

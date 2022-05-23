@@ -60,11 +60,11 @@ public class SignUpController {
 
         signUpButton.setOnAction(event -> {
             signUpNewUser();
-            openNewScene("/com/example/javafxapp/hello-view.fxml");
+            openNewScene("/com/example/javafxapp/helloView.fxml");
         });
 
         loginBackButton.setOnAction(event -> {
-            openNewScene("/com/example/javafxapp/hello-view.fxml");
+            openNewScene("/com/example/javafxapp/helloView.fxml");
         });
     }
 

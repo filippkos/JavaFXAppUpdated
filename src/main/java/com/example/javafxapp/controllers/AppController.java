@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class AppController {
@@ -59,7 +59,7 @@ public class AppController {
     private TableColumn<userTask, String> completedTasksColumn;
 
     @FXML
-    private TableColumn<?, ?> CompletedDeadlineColumn;
+    private TableColumn<com.example.javafxapp.models.userTask, Date> completedDeadlineColumn;
 
     @FXML
     private TableColumn<?, ?> completionTimeColumn;
@@ -80,7 +80,7 @@ public class AppController {
     private TableColumn<userTask, String> currentTasksColumn;
 
     @FXML
-    private TableColumn<?, ?> deadlineColumn;
+    private TableColumn<com.example.javafxapp.models.userTask, Date> deadlineColumn;
 
     @FXML
     private Tab doneTab;
@@ -107,13 +107,13 @@ public class AppController {
     private TableColumn<?, ?> reasonColumn;
 
     @FXML
-    private TableColumn<?, ?> startTimeColumn;
+    private TableColumn<com.example.javafxapp.models.userTask, Date> startTimeColumn;
 
     @FXML
     private TableColumn<?, ?> timeLeftColumn;
 
 
-    ObservableList<userTask> currentUserTasks = FXCollections.observableArrayList();
+    static ObservableList<userTask> currentUserTasks = FXCollections.observableArrayList();
     ObservableList<userTask> doneUserTasks = FXCollections.observableArrayList();
     ObservableList<userTask> cancelledUserTasks = FXCollections.observableArrayList();
 
@@ -126,21 +126,18 @@ public class AppController {
     void initialize() {
         greetingsText.setText("Hello, " + User.getCurrentFirstName() + "!");
         loginSignOutButton.setOnAction(event -> {
-            openNewScene("/com/example/javafxapp/hello-view.fxml");
+            openNewScene("/com/example/javafxapp/helloView.fxml", true);
         });
-        getAllTasks();
+        getAllTasksFromDbToList();
         initCols();
         editableCols();
 
         addTaskButton.setOnAction(event -> {
-            Optional<String> result = getPopupDialogueWindow().showAndWait();
-            if (result.isPresent()) {
-                addNewTaskToDbTable(result.get());
-                initCols();
-                getAllTasks();
-            }
+            openNewScene("/com/example/javafxapp/addNewTaskDialogue.fxml", false);
+
         });
     }
+
 
     public class TaskActionCell extends TableCell<userTask, userTask> {
 
@@ -156,14 +153,14 @@ public class AppController {
                 userTask task = getItem();
                 changeStatus(task, TaskState.DONE.getTitle());
                 initCols();
-                getAllTasks();
+                getAllTasksFromDbToList();
             });
 
             cancel.setOnAction(event -> {
                 userTask task = getItem();
                 changeStatus(task, TaskState.CANCELLED.getTitle());
                 initCols();
-                getAllTasks();
+                getAllTasksFromDbToList();
             });
 
             remove.setOnAction(event -> {
@@ -171,7 +168,7 @@ public class AppController {
                 System.out.println("remove" + task.getTask());
                 removeTaskFromDbTable(task);
                 initCols();
-                getAllTasks();
+                getAllTasksFromDbToList();
             });
         }
 
@@ -191,27 +188,21 @@ public class AppController {
         }
     }
 
-    /**
-     * Создаёт всплывающее окно с текстовым полем для ввода нового ТАСКа
-     */
-    private TextInputDialog getPopupDialogueWindow(){
-        TextInputDialog newInputDialogue = new TextInputDialog();
-        newInputDialogue.setTitle("New task creation");
-        newInputDialogue.setGraphic(null);
-        newInputDialogue.setHeaderText(null);
-        newInputDialogue.setContentText("Text: ");
-        return newInputDialogue;
-    }
 
     /**
      * Надо, чтобы данные загружались из БД
      */
-    private void initCols(){
+    private void initCols() {
         currentIdColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("id"));
         currentTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
+        startTimeColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("startTime"));
+        deadlineColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("deadline"));
+
 
         completedTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
+        completedDeadlineColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("deadline"));
         cancelledTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
+
 
         editColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
         editColumn.setCellFactory(col -> new TaskActionCell());
@@ -228,29 +219,35 @@ public class AppController {
     /**
      * Достать все таски из ДБ и положить в ТАСКС лист
      */
-    private void getAllTasks() {
+    private void getAllTasksFromDbToList() {
         ResultSet rs = new DatabaseHandler().getTaskTableFromDb();
-            try {
-                while (rs.next()) {
-                    if(rs.getString("state").equals("current")) {
-                        currentUserTasks.add(new userTask(rs.getString("idtask"),
-                                rs.getString("task"),
-                                rs.getString("state")));
-                    }
-                    if(rs.getString("state").equals("done")) {
-                        doneUserTasks.add(new userTask(rs.getString("idtask"),
-                                rs.getString("task"),
-                                rs.getString("state")));
-                    }
-                    if(rs.getString("state").equals("cancelled")) {
-                        cancelledUserTasks.add(new userTask(rs.getString("idtask"),
-                                rs.getString("task"),
-                                rs.getString("state")));
-                    }
+        try {
+            while (rs.next()) {
+                if (rs.getString("state").equals(TaskState.CURRENT.getTitle())) {
+                    currentUserTasks.add(new userTask(rs.getString("idtask"),
+                            rs.getString("task"),
+                            rs.getString("state"),
+                            rs.getDate("startdate"),
+                            rs.getDate("deadline")));
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
+                if (rs.getString("state").equals(TaskState.DONE.getTitle())) {
+                    doneUserTasks.add(new userTask(rs.getString("idtask"),
+                            rs.getString("task"),
+                            rs.getString("state"),
+                            rs.getDate("startdate"),
+                            rs.getDate("deadline")));
+                }
+                if (rs.getString("state").equals(TaskState.CANCELLED.getTitle())) {
+                    cancelledUserTasks.add(new userTask(rs.getString("idtask"),
+                            rs.getString("task"),
+                            rs.getString("state"),
+                            rs.getDate("startdate"),
+                            rs.getDate("deadline")));
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -258,7 +255,7 @@ public class AppController {
      */
     private void editableCols() {
         currentTasksColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        currentTasksColumn.setOnEditCommit(event ->{
+        currentTasksColumn.setOnEditCommit(event -> {
             String id = event.getTableView().getItems().get(event.getTablePosition().getRow()).getId();
             event.getTableView().getItems().get(event.getTablePosition().getRow()).setTask(event.getNewValue());
 
@@ -268,8 +265,10 @@ public class AppController {
         currentTable.setEditable(true);
     }
 
-    private void openNewScene(String window) {
-        loginSignOutButton.getScene().getWindow().hide();
+    private void openNewScene(String window, boolean hidePrevious) {
+        if(hidePrevious) {
+            loginSignOutButton.getScene().getWindow().hide();
+        }
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(window));
@@ -288,15 +287,6 @@ public class AppController {
     }
 
     /**
-     * Надо загружать ТАСК в БД
-     */
-    private void addNewTaskToDbTable(String text) {
-        DatabaseHandler dbHandler = new DatabaseHandler();
-        userTask userTask = new userTask(text);
-        dbHandler.addTaskToDb(userTask);
-    }
-
-    /**
      * Надо редактировать определённый ТАСК в БД
      */
     private void editTaskInDbTable(String id, String newTask) {
@@ -312,4 +302,5 @@ public class AppController {
         DatabaseHandler dbHandler = new DatabaseHandler();
         dbHandler.removeTaskFromDb(userTask);
     }
+
 }

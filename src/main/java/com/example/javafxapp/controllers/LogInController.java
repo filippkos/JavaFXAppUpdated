@@ -49,8 +49,10 @@ public class LogInController {
             String loginText = login_field.getText().trim();
             String loginPassword = password_field.getText().trim();
 
-            if(!loginText.equals("") && !loginPassword.equals(""))
+            if(!loginText.equals("") && !loginPassword.equals("")) {
                 loginUser(loginText, loginPassword);
+                AppController.currentUserTasks.clear();
+            }
             else
                 System.out.println("Login and pass is empty");
         });
@@ -98,7 +100,7 @@ public class LogInController {
 
         //Если строк больше 0, логинимся
         if(counter >= 1) {
-            openNewScene("/com/example/javafxapp/app.fxml");
+            openNewScene("/com/example/javafxapp/application.fxml");
         } else {
             Shake userLoginAnim = new Shake(login_field);
             Shake userPassAnim = new Shake(password_field);
