@@ -9,12 +9,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -23,7 +23,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AppController {
@@ -38,16 +41,7 @@ public class AppController {
     private Button addTaskButton;
 
     @FXML
-    private AnchorPane appPane;
-
-    @FXML
-    private Tab canceledTab;
-
-    @FXML
-    private AnchorPane canceledTabAnchorPane;
-
-    @FXML
-    private TableColumn<?, ?> cancellationTimeColumn;
+    private TableColumn<com.example.javafxapp.models.userTask, Date> cancellationTimeColumn;
 
     @FXML
     private TableView<userTask> cancelledTable;
@@ -62,16 +56,10 @@ public class AppController {
     private TableColumn<com.example.javafxapp.models.userTask, Date> completedDeadlineColumn;
 
     @FXML
-    private TableColumn<?, ?> completionTimeColumn;
+    private TableColumn<com.example.javafxapp.models.userTask, Date> completionTimeColumn;
 
     @FXML
     private TableColumn<userTask, String> currentIdColumn;
-
-    @FXML
-    private Tab currentTab;
-
-    @FXML
-    private AnchorPane currentTabAnchorPane;
 
     @FXML
     private TableView<userTask> currentTable;
@@ -81,12 +69,6 @@ public class AppController {
 
     @FXML
     private TableColumn<com.example.javafxapp.models.userTask, Date> deadlineColumn;
-
-    @FXML
-    private Tab doneTab;
-
-    @FXML
-    private AnchorPane doneTabAnchorPane;
 
     @FXML
     private TableView<userTask> doneTable;
@@ -101,10 +83,10 @@ public class AppController {
     private Button loginSignOutButton;
 
     @FXML
-    private TableColumn<?, ?> onTimeOrNotColumn;
+    private TableColumn<userTask, Boolean> isInTimeColumn;
 
     @FXML
-    private TableColumn<?, ?> reasonColumn;
+    private TableColumn<com.example.javafxapp.models.userTask, String> reasonColumn;
 
     @FXML
     private TableColumn<com.example.javafxapp.models.userTask, Date> startTimeColumn;
@@ -158,9 +140,18 @@ public class AppController {
 
             cancel.setOnAction(event -> {
                 userTask task = getItem();
+
+                Optional<String> result = getPopupDialogueWindow().showAndWait();
+                if (result.isPresent()) {
+                    task.setReasonForCancellation(result.get());
+                } else {
+                    ((Node) event.getSource()).getScene().getWindow().hide();
+                }
                 changeStatus(task, TaskState.CANCELLED.getTitle());
                 initCols();
                 getAllTasksFromDbToList();
+
+
             });
 
             remove.setOnAction(event -> {
@@ -170,6 +161,16 @@ public class AppController {
                 initCols();
                 getAllTasksFromDbToList();
             });
+        }
+
+
+        private TextInputDialog getPopupDialogueWindow(){
+            TextInputDialog textInputDialog = new TextInputDialog();
+            textInputDialog.setTitle("Reason for cancellation");
+            textInputDialog.setGraphic(null);
+            textInputDialog.setHeaderText("What is the reason for the cancellation?");
+            textInputDialog.setContentText(null);
+            return textInputDialog;
         }
 
         private void changeStatus(userTask task, String state) {
@@ -201,7 +202,11 @@ public class AppController {
 
         completedTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
         completedDeadlineColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("deadline"));
+        completionTimeColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("completionTime"));
+        isInTimeColumn.setCellValueFactory(new PropertyValueFactory<userTask, Boolean>("isInTime"));
         cancelledTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
+        cancellationTimeColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("cancellationTime"));
+        reasonColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("reasonForCancellation"));
 
 
         editColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
@@ -227,22 +232,31 @@ public class AppController {
                     currentUserTasks.add(new userTask(rs.getString("idtask"),
                             rs.getString("task"),
                             rs.getString("state"),
-                            rs.getDate("startdate"),
-                            rs.getDate("deadline")));
+                            rs.getTimestamp("startdate").toLocalDateTime(),
+                            rs.getTimestamp("deadline").toLocalDateTime(),
+                            null,
+                            null,
+                            rs.getBoolean("isintime"), null));
                 }
                 if (rs.getString("state").equals(TaskState.DONE.getTitle())) {
                     doneUserTasks.add(new userTask(rs.getString("idtask"),
                             rs.getString("task"),
                             rs.getString("state"),
-                            rs.getDate("startdate"),
-                            rs.getDate("deadline")));
+                            rs.getTimestamp("startdate").toLocalDateTime(),
+                            rs.getTimestamp("deadline").toLocalDateTime(),
+                            rs.getTimestamp("completiontime").toLocalDateTime(),
+                            null,
+                            rs.getBoolean("isintime"), null));
                 }
                 if (rs.getString("state").equals(TaskState.CANCELLED.getTitle())) {
                     cancelledUserTasks.add(new userTask(rs.getString("idtask"),
                             rs.getString("task"),
                             rs.getString("state"),
-                            rs.getDate("startdate"),
-                            rs.getDate("deadline")));
+                            rs.getTimestamp("startdate").toLocalDateTime(),
+                            rs.getTimestamp("deadline").toLocalDateTime(),
+                            null,
+                            rs.getTimestamp("cancellationtime").toLocalDateTime(),
+                            rs.getBoolean("isintime"), rs.getString("reasonforcancellation")));
                 }
             }
         } catch (SQLException e) {

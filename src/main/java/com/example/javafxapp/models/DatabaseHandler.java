@@ -4,6 +4,7 @@ import com.example.javafxapp.Configs;
 import com.example.javafxapp.Const;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class DatabaseHandler extends Configs {
     Connection dbConnection;
@@ -50,7 +51,8 @@ public class DatabaseHandler extends Configs {
     public ResultSet getUser(User user) {
         ResultSet resSet = null;
 
-        String select = "SELECT * FROM " + Const.USER_TABLE + " WHERE " + Const.USERS_USERNAME + "=? AND " + Const.USERS_PASSWORD + "=?";
+        String select = "SELECT * FROM " + Const.USER_TABLE +
+                " WHERE " + Const.USERS_USERNAME + "=? AND " + Const.USERS_PASSWORD + "=?";
         try {
             PreparedStatement prSt = getDbConnection().prepareStatement(select);
             prSt.setString(1, user.getUserName());
@@ -68,13 +70,14 @@ public class DatabaseHandler extends Configs {
 
     public void addTaskToDb(userTask task) {
         String insert = "INSERT INTO " + Const.TASKS_TABLE + "(" +
-                Const.TASKS_TASK + "," + Const.TASKS_STATE + "," + Const.TASKS_START_DATE + "," + Const.TASKS_DEADLINE + ")" +
+                Const.TASKS_TASK + "," + Const.TASKS_STATE + "," +
+                Const.TASKS_START_DATE + "," + Const.TASKS_DEADLINE + ")" +
                 "VALUES(?,?,NOW(),?)";
         try {
             PreparedStatement prSt = getDbConnection().prepareStatement(insert);
             prSt.setString(1, task.getTask());
             prSt.setString(2, TaskState.CURRENT.getTitle());
-            prSt.setDate(3, new Date(task.getDeadline().getTime()));
+            prSt.setTimestamp(3, Timestamp.valueOf(task.getDeadline()));
 
 
             prSt.executeUpdate();
@@ -87,13 +90,23 @@ public class DatabaseHandler extends Configs {
 
     public void editTaskStateInDb(userTask task, String state) {
         String update = "";
+        String isInTime = "";
+        if(task.getDeadline().isEqual(LocalDateTime.now())||task.getDeadline().isAfter(LocalDateTime.now())){
+            isInTime = ", " + Const.TASKS_IS_IN_TIME + " = 1";
+        }
         if(state.equals(TaskState.DONE.getTitle())) {
             update = "UPDATE " + Const.TASKS_TABLE + " SET " +
-                    Const.TASKS_STATE + " = " + "\"" + state + "\"" + ", " + Const.TASKS_COMPLETION_TIME + " = " + "NOW()" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+                    Const.TASKS_STATE + " = " + "\"" + state + "\"" + ", " +
+                    Const.TASKS_COMPLETION_TIME + " = " + "NOW()" +
+                    isInTime +
+                    " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
         }
         if(state.equals(TaskState.CANCELLED.getTitle())) {
             update = "UPDATE " + Const.TASKS_TABLE + " SET " +
-                    Const.TASKS_STATE + " = " + "\"" + state + "\"" + ", " + Const.TASKS_CANCELLATION_TIME + " = " + "NOW()" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+                    Const.TASKS_STATE + " = " + "\"" + state + "\"" + ", " +
+                    Const.TASKS_CANCELLATION_TIME + " = " + "NOW()" + ", " +
+                    Const.TASKS_REASON_FOR_CANCELLATION + " = " + "\"" + task.getReasonForCancellation() + "\"" +
+                    " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
         }
 
         try {
@@ -107,7 +120,8 @@ public class DatabaseHandler extends Configs {
 
     public void editTaskInDb(userTask task) {
         String update = "UPDATE " + Const.TASKS_TABLE + " SET " +
-                Const.TASKS_TASK + " = " + "\"" + task.getTask() + "\"" + " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
+                Const.TASKS_TASK + " = " + "\"" + task.getTask() + "\"" +
+                " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
 
         try {
             getDbConnection().createStatement().executeUpdate(update);

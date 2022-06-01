@@ -18,4 +18,6 @@ public class Const {
     public static final String TASKS_DEADLINE = "deadline";
     public static final String TASKS_COMPLETION_TIME = "completiontime";
     public static final String TASKS_CANCELLATION_TIME = "cancellationtime";
+    public static final String TASKS_REASON_FOR_CANCELLATION = "reasonforcancellation";
+    public static final String TASKS_IS_IN_TIME = "isintime";
 }
