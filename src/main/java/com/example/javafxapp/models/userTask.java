@@ -8,23 +8,23 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 public class userTask {
-    private String id;
+    private int id;
     private String task;
     private String state;
-    private LocalDateTime startTime;
-    private LocalDateTime deadline;
-    private LocalDateTime completionTime;
+    private String startTime;
+    private String deadline;
+    private String completionTime;
     private boolean isInTime;
-    private LocalDateTime cancellationTime;
+    private String cancellationTime;
     private String reasonForCancellation;
     private String timeLeft;
 
-    public userTask(String task, LocalDateTime deadline) {
+    public userTask(String task, String deadline) {
         this.task = task;
         this.deadline = deadline;
     }
 
-    public userTask(String id, String task, String state, LocalDateTime startTime, LocalDateTime deadline, LocalDateTime completionTime, LocalDateTime cancellationTime, boolean isInTime, String reasonForCancellation, String timeLeft) {
+    public userTask(int id, String task, String state, String startTime, String deadline, String completionTime, String cancellationTime, boolean isInTime, String reasonForCancellation, String timeLeft) {
         this.id = id;
         this.task = task;
         this.state = state;
@@ -37,17 +37,17 @@ public class userTask {
         this.timeLeft = timeLeft;
     }
 
-    public userTask(String id, String task) {
+    public userTask(int id, String task) {
         this.id = id;
         this.task = task;
 
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -67,35 +67,35 @@ public class userTask {
         this.state = state;
     }
 
-    public LocalDateTime getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getDeadline() {
+    public String getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(LocalDateTime deadline) {
+    public void setDeadline(String deadline) {
         this.deadline = deadline;
     }
 
-    public LocalDateTime getCompletionTime() {
+    public String getCompletionTime() {
         return completionTime;
     }
 
-    public void setCompletionTime(LocalDateTime completionTime) {
+    public void setCompletionTime(String completionTime) {
         this.completionTime = completionTime;
     }
 
-    public LocalDateTime getCancellationTime() {
+    public String getCancellationTime() {
         return cancellationTime;
     }
 
-    public void setCancellationTime(LocalDateTime cancellationTime) {
+    public void setCancellationTime(String cancellationTime) {
         this.cancellationTime = cancellationTime;
     }
 

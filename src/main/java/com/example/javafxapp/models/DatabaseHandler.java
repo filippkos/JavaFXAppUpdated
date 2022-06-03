@@ -5,6 +5,7 @@ import com.example.javafxapp.Const;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DatabaseHandler extends Configs {
     Connection dbConnection;
@@ -68,7 +69,7 @@ public class DatabaseHandler extends Configs {
         return  resSet;
     }
 
-    public void addTaskToDb(userTask task) {
+    public void addTaskToDb(userTask task, LocalDateTime deadline) {
         String insert = "INSERT INTO " + Const.TASKS_TABLE + "(" +
                 Const.TASKS_TASK + "," + Const.TASKS_STATE + "," +
                 Const.TASKS_START_DATE + "," + Const.TASKS_DEADLINE + ")" +
@@ -77,7 +78,7 @@ public class DatabaseHandler extends Configs {
             PreparedStatement prSt = getDbConnection().prepareStatement(insert);
             prSt.setString(1, task.getTask());
             prSt.setString(2, TaskState.CURRENT.getTitle());
-            prSt.setTimestamp(3, Timestamp.valueOf(task.getDeadline()));
+            prSt.setTimestamp(3, Timestamp.valueOf(deadline));
 
 
             prSt.executeUpdate();
@@ -91,7 +92,9 @@ public class DatabaseHandler extends Configs {
     public void editTaskStateInDb(userTask task, String state) {
         String update = "";
         String isInTime = "";
-        if(task.getDeadline().isEqual(LocalDateTime.now())||task.getDeadline().isAfter(LocalDateTime.now())){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy  HH:mm");
+        LocalDateTime deadlineLocal = LocalDateTime.parse(task.getDeadline(), formatter);
+        if(deadlineLocal.isEqual(LocalDateTime.now())||deadlineLocal.isAfter(LocalDateTime.now())){
             isInTime = ", " + Const.TASKS_IS_IN_TIME + " = 1";
         }
         if(state.equals(TaskState.DONE.getTitle())) {
