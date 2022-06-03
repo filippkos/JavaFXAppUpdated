@@ -27,5 +27,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.7.1" level="project" />
     <orderEntry type="library" name="fontawesomefx-8.9" level="project" />
     <orderEntry type="library" name="fontawesomefx-glyphsbrowser-all-1.0" level="project" />
+    <orderEntry type="library" name="tornadofx-controls-1.0.6" level="project" />
   </component>
 </module>

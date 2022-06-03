@@ -17,13 +17,14 @@ public class userTask {
     private boolean isInTime;
     private LocalDateTime cancellationTime;
     private String reasonForCancellation;
+    private String timeLeft;
 
     public userTask(String task, LocalDateTime deadline) {
         this.task = task;
         this.deadline = deadline;
     }
 
-    public userTask(String id, String task, String state, LocalDateTime startTime, LocalDateTime deadline, LocalDateTime completionTime, LocalDateTime cancellationTime, boolean isInTime, String reasonForCancellation) {
+    public userTask(String id, String task, String state, LocalDateTime startTime, LocalDateTime deadline, LocalDateTime completionTime, LocalDateTime cancellationTime, boolean isInTime, String reasonForCancellation, String timeLeft) {
         this.id = id;
         this.task = task;
         this.state = state;
@@ -33,6 +34,7 @@ public class userTask {
         this.cancellationTime = cancellationTime;
         this.isInTime = isInTime;
         this.reasonForCancellation = reasonForCancellation;
+        this.timeLeft = timeLeft;
     }
 
     public userTask(String id, String task) {
@@ -111,5 +113,13 @@ public class userTask {
 
     public void setReasonForCancellation(String reasonForCancellation) {
         this.reasonForCancellation = reasonForCancellation;
+    }
+
+    public String getTimeLeft() {
+        return timeLeft;
+    }
+
+    public void setTimeLeft(String timeLeft) {
+        this.timeLeft = timeLeft;
     }
 }

@@ -24,7 +24,7 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -92,7 +92,7 @@ public class AppController {
     private TableColumn<com.example.javafxapp.models.userTask, Date> startTimeColumn;
 
     @FXML
-    private TableColumn<?, ?> timeLeftColumn;
+    private TableColumn<com.example.javafxapp.models.userTask, String> timeLeftColumn;
 
 
     static ObservableList<userTask> currentUserTasks = FXCollections.observableArrayList();
@@ -119,6 +119,10 @@ public class AppController {
 
         });
     }
+
+
+
+
 
 
     public class TaskActionCell extends TableCell<userTask, userTask> {
@@ -194,10 +198,15 @@ public class AppController {
      * Надо, чтобы данные загружались из БД
      */
     private void initCols() {
+
+
+
+
         currentIdColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("id"));
         currentTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
         startTimeColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("startTime"));
         deadlineColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("deadline"));
+        timeLeftColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("timeLeft"));
 
 
         completedTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
@@ -211,6 +220,8 @@ public class AppController {
 
         editColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
         editColumn.setCellFactory(col -> new TaskActionCell());
+
+
 
         currentTable.getItems().clear();
         doneTable.getItems().clear();
@@ -236,7 +247,9 @@ public class AppController {
                             rs.getTimestamp("deadline").toLocalDateTime(),
                             null,
                             null,
-                            rs.getBoolean("isintime"), null));
+                            rs.getBoolean("isintime"),
+                            null,
+                            getRemainingTime(rs.getTimestamp("deadline").toLocalDateTime())));
                 }
                 if (rs.getString("state").equals(TaskState.DONE.getTitle())) {
                     doneUserTasks.add(new userTask(rs.getString("idtask"),
@@ -246,7 +259,9 @@ public class AppController {
                             rs.getTimestamp("deadline").toLocalDateTime(),
                             rs.getTimestamp("completiontime").toLocalDateTime(),
                             null,
-                            rs.getBoolean("isintime"), null));
+                            rs.getBoolean("isintime"),
+                            null,
+                            null));
                 }
                 if (rs.getString("state").equals(TaskState.CANCELLED.getTitle())) {
                     cancelledUserTasks.add(new userTask(rs.getString("idtask"),
@@ -256,12 +271,56 @@ public class AppController {
                             rs.getTimestamp("deadline").toLocalDateTime(),
                             null,
                             rs.getTimestamp("cancellationtime").toLocalDateTime(),
-                            rs.getBoolean("isintime"), rs.getString("reasonforcancellation")));
+                            rs.getBoolean("isintime"),
+                            rs.getString("reasonforcancellation"),
+                            null));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getRemainingTime(LocalDateTime deadline) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime tempDateTime = LocalDateTime.from( currentTime );
+
+        long years = tempDateTime.until(deadline, ChronoUnit.YEARS);
+        tempDateTime = tempDateTime.plusYears( years );
+        String yearsString = years + " y, ";
+        if (years == 0) {
+            yearsString = "";
+        }
+        long months = tempDateTime.until(deadline, ChronoUnit.MONTHS);
+        tempDateTime = tempDateTime.plusMonths( months );
+        String monthString = months + " m, ";
+        if (months == 0) {
+            monthString = "";
+        }
+        long days = tempDateTime.until(deadline, ChronoUnit.DAYS);
+        tempDateTime = tempDateTime.plusDays( days );
+        String daysString = days + " d, ";
+        if (days == 0) {
+            daysString = "";
+        }
+        long hours = tempDateTime.until(deadline, ChronoUnit.HOURS);
+        tempDateTime = tempDateTime.plusHours( hours );
+        String hoursString = hours + " h, ";
+        if (hours == 0) {
+            hoursString = "";
+        }
+        long minutes = tempDateTime.until(deadline, ChronoUnit.MINUTES);
+        tempDateTime = tempDateTime.plusMinutes(minutes);
+        String minutesString = minutes + " min, ";
+        if (minutes == 0) {
+            minutesString = "";
+        }
+        long seconds = tempDateTime.until( deadline, ChronoUnit.SECONDS);
+        String secondsString = seconds + " s";
+        if (seconds < 0) {
+            return "";
+        }
+        return yearsString + monthString + daysString + hoursString + minutesString + secondsString;
     }
 
     /**

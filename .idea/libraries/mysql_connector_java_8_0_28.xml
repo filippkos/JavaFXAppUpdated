@@ -2,6 +2,7 @@
   <library name="mysql-connector-java-8.0.28">
     <CLASSES>
       <root url="jar://C:/Program Files (x86)/MySQL/Connector J 8.0/mysql-connector-java-8.0.28.jar!/" />
+      <root url="jar://$APPLICATION_HOME_DIR$/lib/tornadofx-controls-1.0.6.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

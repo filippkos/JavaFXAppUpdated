@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import tornadofx.control.DateTimePicker;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,8 +16,9 @@ import java.time.*;
 import java.util.Date;
 
 public class DialogueController {
+
     @FXML
-    private DatePicker inputNewTaskDatePicker;
+    private DateTimePicker inputNewTaskDatePicker;
 
     @FXML
     private TextField inputNewTaskTextField;
@@ -30,9 +32,9 @@ public class DialogueController {
     @FXML
     void initialize() {
         inputNewTaskOkButton.setOnAction(event -> {
-            LocalDate localDate = inputNewTaskDatePicker.getValue();
-            Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-            addNewTaskToDbTable(inputNewTaskTextField.getText(), Date.from(instant));
+            LocalDateTime localDateTime = inputNewTaskDatePicker.getDateTimeValue();
+            System.out.println(localDateTime);
+            addNewTaskToDbTable(inputNewTaskTextField.getText(), localDateTime);
             ((Node) event.getSource()).getScene().getWindow().hide();
         });
 
@@ -45,9 +47,9 @@ public class DialogueController {
     /**
      * Надо загружать ТАСК в БД
      */
-    private void addNewTaskToDbTable(String text, Date deadline) {
+    private void addNewTaskToDbTable(String text, LocalDateTime deadline) {
         DatabaseHandler dbHandler = new DatabaseHandler();
-        userTask userTask = new userTask(text, deadline.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        userTask userTask = new userTask(text, deadline);
         dbHandler.addTaskToDb(userTask);
         addTheLastUserTaskToList();
     }
@@ -62,10 +64,11 @@ public class DialogueController {
                             rs.getString("task"),
                             rs.getString("state"),
                             rs.getDate("startdate").toLocalDate().atTime(LocalTime.now()),
-                            rs.getDate("deadline").toLocalDate().atTime(LocalTime.now()),
+                            rs.getTimestamp("deadline").toLocalDateTime(),
                             null,
                             null,
                             rs.getBoolean("isintime"),
+                            null,
                             null));
                 }
             }
