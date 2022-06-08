@@ -1,9 +1,14 @@
 package com.example.javafxapp.controllers;
 
 import com.example.javafxapp.models.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,6 +20,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -108,17 +113,26 @@ public class AppController {
         loginSignOutButton.setOnAction(event -> {
             openNewScene("/com/example/javafxapp/helloView.fxml", true);
         });
-
         getAllTasksFromDbToList();
         initCols();
         editableCols();
+
+        Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                setNewTimeLeftInList();
+            }
+        }));
+        fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
+        fiveSecondsWonder.play();
 
         addTaskButton.setOnAction(event -> {
             openNewScene("/com/example/javafxapp/addNewTaskDialogue.fxml", false);
 
         });
-
     }
+
 
     public class TaskActionCell extends TableCell<userTask, userTask> {
 
@@ -149,8 +163,6 @@ public class AppController {
                 changeStatus(task, TaskState.CANCELLED.getTitle());
                 initCols();
                 getAllTasksFromDbToList();
-
-
             });
 
             remove.setOnAction(event -> {
@@ -193,12 +205,16 @@ public class AppController {
      * Надо, чтобы данные загружались из БД
      */
     private void initCols() {
+        currentTable.getItems().clear();
+        doneTable.getItems().clear();
+        cancelledTable.getItems().clear();
+
+
         currentIdColumn.setCellValueFactory(new PropertyValueFactory<userTask, Integer>("id"));
         currentTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
         startTimeColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("startTime"));
         deadlineColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("deadline"));
-        timeLeftColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("timeLeft"));
-
+        timeLeftColumn.setCellValueFactory(cellData -> cellData.getValue().getTimeLeft());
 
         completedTasksColumn.setCellValueFactory(new PropertyValueFactory<userTask, String>("task"));
         completedDeadlineColumn.setCellValueFactory(new PropertyValueFactory<userTask, Date>("deadline"));
@@ -211,19 +227,34 @@ public class AppController {
         editColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
         editColumn.setCellFactory(col -> new TaskActionCell());
 
-        currentTable.getItems().clear();
-        doneTable.getItems().clear();
-        cancelledTable.getItems().clear();
+
 
         currentTable.setItems(currentUserTasks);
         doneTable.setItems(doneUserTasks);
         cancelledTable.setItems(cancelledUserTasks);
     }
 
+
+    private void setNewTimeLeftInList() {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy  HH:mm");
+
+            for (int i = 0; i < currentUserTasks.size(); i++) {
+                LocalDateTime deadlineLocal = LocalDateTime.parse(currentUserTasks.get(i).getDeadline(), formatter);
+                currentUserTasks.get(i).setTimeLeft((new DateTimeHandler().getRemainingTime(deadlineLocal)));
+
+            }
+
+    }
+
     /**
      * Достать все таски из ДБ и положить в ТАСКС лист
      */
     private void getAllTasksFromDbToList() {
+        currentUserTasks.clear();
+        cancelledUserTasks.clear();
+        doneUserTasks.clear();
+
         ResultSet rs = new DatabaseHandler().getTaskTableFromDb();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy  HH:mm");
         try {
@@ -278,7 +309,7 @@ public class AppController {
         currentTasksColumn.setOnEditCommit(event -> {
             int id = event.getTableView().getItems().get(event.getTablePosition().getRow()).getId();
             event.getTableView().getItems().get(event.getTablePosition().getRow()).setTask(event.getNewValue());
-
+            
             /** метод редактирования */
             editTaskInDbTable(id, event.getNewValue());
         });

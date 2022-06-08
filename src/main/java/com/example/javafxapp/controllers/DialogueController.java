@@ -7,7 +7,6 @@ import com.example.javafxapp.models.userTask;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import tornadofx.control.DateTimePicker;
 
@@ -15,7 +14,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class DialogueController {
 

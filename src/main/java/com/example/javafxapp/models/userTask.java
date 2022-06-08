@@ -1,11 +1,7 @@
 package com.example.javafxapp.models;
 
-import com.example.javafxapp.controllers.AppController;
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-
-import java.time.LocalDateTime;
-import java.util.Date;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class userTask {
     private int id;
@@ -17,11 +13,15 @@ public class userTask {
     private boolean isInTime;
     private String cancellationTime;
     private String reasonForCancellation;
-    private String timeLeft;
+    private StringProperty timeLeft;
 
     public userTask(String task, String deadline) {
         this.task = task;
         this.deadline = deadline;
+    }
+
+    public userTask(String timeLeft) {
+        this.timeLeft = new SimpleStringProperty(timeLeft);
     }
 
     public userTask(int id, String task, String state, String startTime, String deadline, String completionTime, String cancellationTime, boolean isInTime, String reasonForCancellation, String timeLeft) {
@@ -34,13 +34,12 @@ public class userTask {
         this.cancellationTime = cancellationTime;
         this.isInTime = isInTime;
         this.reasonForCancellation = reasonForCancellation;
-        this.timeLeft = timeLeft;
+        this.timeLeft = new SimpleStringProperty(timeLeft);
     }
 
     public userTask(int id, String task) {
         this.id = id;
         this.task = task;
-
     }
 
     public int getId() {
@@ -115,11 +114,11 @@ public class userTask {
         this.reasonForCancellation = reasonForCancellation;
     }
 
-    public String getTimeLeft() {
+    public StringProperty getTimeLeft() {
         return timeLeft;
     }
 
     public void setTimeLeft(String timeLeft) {
-        this.timeLeft = timeLeft;
+        this.timeLeft.set(timeLeft);
     }
 }
