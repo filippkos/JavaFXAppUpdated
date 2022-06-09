@@ -195,15 +195,15 @@ public class DatabaseHandler extends Configs {
     public void createNewTaskBase(String idOfNewUser) {
         ResultSet resSet = null;
         String create = "CREATE TABLE `myfirstapp`.`tasks_" + idOfNewUser + "` (" +
-  "`idtask` INT NOT NULL primary key AUTO_INCREMENT," +
-  "`task` VARCHAR(45) NOT NULL," +
-  "`state` VARCHAR(45) NOT NULL," +
-  "`startdate` DATETIME NULL DEFAULT NULL," +
-  "`deadline` DATETIME NULL DEFAULT NULL," +
-  "`completiontime` DATETIME NULL DEFAULT NULL," +
-  "`cancellationtime` DATETIME NULL DEFAULT NULL," +
-  "`isintime` TINYINT NOT NULL DEFAULT '0'," +
-  "`reasonforcancellation` VARCHAR(45) NULL DEFAULT NULL)" +
+  "`" + Const.TASKS_ID + "` INT NOT NULL primary key AUTO_INCREMENT," +
+  "`" + Const.TASKS_TASK + "` VARCHAR(45) NOT NULL," +
+  "`" + Const.TASKS_STATE + "` VARCHAR(45) NOT NULL," +
+  "`" + Const.TASKS_START_DATE + "` DATETIME NULL DEFAULT NULL," +
+  "`" + Const.TASKS_DEADLINE + "` DATETIME NULL DEFAULT NULL," +
+  "`" + Const.TASKS_COMPLETION_TIME + "` DATETIME NULL DEFAULT NULL," +
+  "`" + Const.TASKS_CANCELLATION_TIME + "` DATETIME NULL DEFAULT NULL," +
+  "`" + Const.TASKS_IS_IN_TIME + "` TINYINT NOT NULL DEFAULT '0'," +
+  "`" + Const.TASKS_REASON_FOR_CANCELLATION + "` VARCHAR(45) NULL DEFAULT NULL)" +
         "ENGINE = InnoDB " +
         "DEFAULT CHARACTER SET = utf8mb4 " +
         "COLLATE = utf8mb4_0900_ai_ci;";
