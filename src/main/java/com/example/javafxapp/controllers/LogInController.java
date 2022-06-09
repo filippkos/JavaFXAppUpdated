@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+import com.example.javafxapp.Const;
 import com.example.javafxapp.animations.Shake;
 import com.example.javafxapp.models.DatabaseHandler;
 import com.example.javafxapp.models.User;
@@ -87,15 +88,20 @@ public class LogInController {
             try {
 
                 String name = "";
+                String id = "";
                 while(result.next()) {
-                    name = result.getString("firstname");
+
+                    name = result.getString(Const.USERS_FIRSTNAME);
+                    id = result.getString(Const.USERS_ID);
                     counter++;
                 }
 
+                User.setCurrentId(id);
                 user.setCurrentFirstName(name);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
 
 
         //Если строк больше 0, логинимся

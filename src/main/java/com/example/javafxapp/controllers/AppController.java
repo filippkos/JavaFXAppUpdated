@@ -103,6 +103,7 @@ public class AppController {
     ObservableList<userTask> cancelledUserTasks = FXCollections.observableArrayList();
 
     userTask userTask = null;
+    String loggedInUserId = "";
 
     /**
      * Инициализация контроллера
@@ -110,6 +111,7 @@ public class AppController {
     @FXML
     void initialize() {
         greetingsText.setText("Hello, " + User.getCurrentFirstName() + "!");
+
         loginSignOutButton.setOnAction(event -> {
             openNewScene("/com/example/javafxapp/helloView.fxml", true);
         });
@@ -173,6 +175,8 @@ public class AppController {
                 getAllTasksFromDbToList();
             });
         }
+
+
 
 
         private TextInputDialog getPopupDialogueWindow(){

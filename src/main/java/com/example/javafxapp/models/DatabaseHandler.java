@@ -69,8 +69,24 @@ public class DatabaseHandler extends Configs {
         return  resSet;
     }
 
+    public ResultSet getAllUsers() {
+        ResultSet resSet = null;
+
+        String select = "SELECT * FROM " + Const.USER_TABLE;
+        try {
+            PreparedStatement prSt = getDbConnection().prepareStatement(select);
+            resSet = prSt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return  resSet;
+    }
+
     public void addTaskToDb(userTask task, LocalDateTime deadline) {
-        String insert = "INSERT INTO " + Const.TASKS_TABLE + "(" +
+        String insert = "INSERT INTO " + Const.TASKS_TABLE + "_" + User.getCurrentId() + "(" +
                 Const.TASKS_TASK + "," + Const.TASKS_STATE + "," +
                 Const.TASKS_START_DATE + "," + Const.TASKS_DEADLINE + ")" +
                 "VALUES(?,?,NOW(),?)";
@@ -98,14 +114,14 @@ public class DatabaseHandler extends Configs {
             isInTime = ", " + Const.TASKS_IS_IN_TIME + " = 1";
         }
         if(state.equals(TaskState.DONE.getTitle())) {
-            update = "UPDATE " + Const.TASKS_TABLE + " SET " +
+            update = "UPDATE " + Const.TASKS_TABLE + "_" + User.getCurrentId() + " SET " +
                     Const.TASKS_STATE + " = " + "\"" + state + "\"" + ", " +
                     Const.TASKS_COMPLETION_TIME + " = " + "NOW()" +
                     isInTime +
                     " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
         }
         if(state.equals(TaskState.CANCELLED.getTitle())) {
-            update = "UPDATE " + Const.TASKS_TABLE + " SET " +
+            update = "UPDATE " + Const.TASKS_TABLE + "_" + User.getCurrentId() + " SET " +
                     Const.TASKS_STATE + " = " + "\"" + state + "\"" + ", " +
                     Const.TASKS_CANCELLATION_TIME + " = " + "NOW()" + ", " +
                     Const.TASKS_REASON_FOR_CANCELLATION + " = " + "\"" + task.getReasonForCancellation() + "\"" +
@@ -122,7 +138,7 @@ public class DatabaseHandler extends Configs {
     }
 
     public void editTaskInDb(userTask task) {
-        String update = "UPDATE " + Const.TASKS_TABLE + " SET " +
+        String update = "UPDATE " + Const.TASKS_TABLE + "_" + User.getCurrentId() + " SET " +
                 Const.TASKS_TASK + " = " + "\"" + task.getTask() + "\"" +
                 " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
 
@@ -137,7 +153,7 @@ public class DatabaseHandler extends Configs {
     }
 
     public void removeTaskFromDb(userTask userTask) {
-        String delete = "DELETE FROM " + Const.TASKS_TABLE + " WHERE " + Const.TASKS_ID + " = " + "\"" + userTask.getId() + "\"";
+        String delete = "DELETE FROM " + Const.TASKS_TABLE + "_" + User.getCurrentId() + " WHERE " + Const.TASKS_ID + " = " + "\"" + userTask.getId() + "\"";
 
         try {
             getDbConnection().createStatement().executeUpdate(delete);
@@ -151,7 +167,7 @@ public class DatabaseHandler extends Configs {
 
     public ResultSet getTaskTableFromDb() {
         ResultSet resSet = null;
-        String select = "SELECT * FROM " + Const.TASKS_TABLE;
+        String select = "SELECT * FROM " + Const.TASKS_TABLE + "_" + User.getCurrentId();
         try {
             resSet = getDbConnection().createStatement().executeQuery(select);
         } catch (SQLException e) {
@@ -165,7 +181,44 @@ public class DatabaseHandler extends Configs {
 
     public ResultSet getTheLastTaskFromDb() {
         ResultSet resSet = null;
-        String select = "SELECT * FROM " + Const.TASKS_TABLE + " ORDER BY " + Const.TASKS_ID + " DESC LIMIT 0, 1";
+        String select = "SELECT * FROM " + Const.TASKS_TABLE + "_" + User.getCurrentId() + " ORDER BY " + Const.TASKS_ID + " DESC LIMIT 0, 1";
+        try {
+            resSet = getDbConnection().createStatement().executeQuery(select);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return resSet;
+    }
+
+    public void createNewTaskBase(String idOfNewUser) {
+        ResultSet resSet = null;
+        String create = "CREATE TABLE `myfirstapp`.`tasks_" + idOfNewUser + "` (" +
+  "`idtask` INT NOT NULL primary key AUTO_INCREMENT," +
+  "`task` VARCHAR(45) NOT NULL," +
+  "`state` VARCHAR(45) NOT NULL," +
+  "`startdate` DATETIME NULL DEFAULT NULL," +
+  "`deadline` DATETIME NULL DEFAULT NULL," +
+  "`completiontime` DATETIME NULL DEFAULT NULL," +
+  "`cancellationtime` DATETIME NULL DEFAULT NULL," +
+  "`isintime` TINYINT NOT NULL DEFAULT '0'," +
+  "`reasonforcancellation` VARCHAR(45) NULL DEFAULT NULL)" +
+        "ENGINE = InnoDB " +
+        "DEFAULT CHARACTER SET = utf8mb4 " +
+        "COLLATE = utf8mb4_0900_ai_ci;";
+        try {
+            getDbConnection().createStatement().executeUpdate(create);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ResultSet getTheLastUserFromDb() {
+        ResultSet resSet = null;
+        String select = "SELECT * FROM " + Const.USER_TABLE + " ORDER BY " + Const.USERS_ID + " DESC LIMIT 0, 1";
         try {
             resSet = getDbConnection().createStatement().executeQuery(select);
         } catch (SQLException e) {

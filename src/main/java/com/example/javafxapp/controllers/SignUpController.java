@@ -1,5 +1,7 @@
 package com.example.javafxapp.controllers;
 
+import com.example.javafxapp.Const;
+import com.example.javafxapp.animations.Shake;
 import com.example.javafxapp.models.DatabaseHandler;
 import com.example.javafxapp.models.User;
 import javafx.fxml.FXML;
@@ -11,6 +13,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class SignUpController {
@@ -60,7 +64,7 @@ public class SignUpController {
 
         signUpButton.setOnAction(event -> {
             signUpNewUser();
-            openNewScene("/com/example/javafxapp/helloView.fxml");
+
         });
 
         loginBackButton.setOnAction(event -> {
@@ -109,9 +113,37 @@ public class SignUpController {
         User user = new User(firstName, lastName, userName, password, location, gender);
 
 
-        dbHandler.signUpUser(user);
-
+        if(logInValidation(user)) {
+            dbHandler.signUpUser(user);
+            ResultSet rs = dbHandler.getTheLastUserFromDb();
+            try {
+                while (rs.next()) {
+                    dbHandler.createNewTaskBase(rs.getString(Const.USERS_ID));
+                    openNewScene("/com/example/javafxapp/helloView.fxml");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            login_field.setText("This username already exists.");
+            Shake userNameAnim = new Shake(login_field);
+            userNameAnim.playAnim();
+        }
     }
 
+    private boolean logInValidation(User user) {
+        DatabaseHandler dbHandler = new DatabaseHandler();
+        ResultSet result = dbHandler.getAllUsers();
+        try {
+            while (result.next()) {
+                if (user.getUserName().equals(result.getString(Const.USERS_USERNAME)) || user.getUserName().equals("This username already exists.")) {
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 
 }

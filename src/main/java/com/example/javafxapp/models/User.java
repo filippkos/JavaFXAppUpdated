@@ -2,6 +2,7 @@ package com.example.javafxapp.models;
 
 public class User {
     private static String currentFirstName = "";
+    private static String currentId = "";
 
     private String firstName;
     private String lastName;
@@ -30,6 +31,14 @@ public class User {
 
     public void setCurrentFirstName(String currentFirstName) {
         this.currentFirstName = currentFirstName;
+    }
+
+    public static String getCurrentId() {
+        return currentId;
+    }
+
+    public static void setCurrentId(String currentId) {
+        User.currentId = currentId;
     }
 
     public String getFirstName() {
