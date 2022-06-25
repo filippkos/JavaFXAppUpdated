@@ -85,7 +85,7 @@ public class DatabaseHandler extends Configs {
         return  resSet;
     }
 
-    public void addTaskToDb(userTask task, LocalDateTime deadline) {
+    public void addTaskToDb(UserTask task, LocalDateTime deadline) {
         String insert = "INSERT INTO " + Const.TASKS_TABLE + "_" + User.getCurrentId() + "(" +
                 Const.TASKS_TASK + "," + Const.TASKS_STATE + "," +
                 Const.TASKS_START_DATE + "," + Const.TASKS_DEADLINE + ")" +
@@ -105,7 +105,7 @@ public class DatabaseHandler extends Configs {
         }
     }
 
-    public void editTaskStateInDb(userTask task, String state) {
+    public void editTaskStateInDb(UserTask task, String state) {
         String update = "";
         String isInTime = "";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy  HH:mm");
@@ -137,7 +137,7 @@ public class DatabaseHandler extends Configs {
         }
     }
 
-    public void editTaskInDb(userTask task) {
+    public void editTaskInDb(UserTask task) {
         String update = "UPDATE " + Const.TASKS_TABLE + "_" + User.getCurrentId() + " SET " +
                 Const.TASKS_TASK + " = " + "\"" + task.getTask() + "\"" +
                 " WHERE " + Const.TASKS_ID + " = " + "\"" + task.getId() + "\"";
@@ -152,7 +152,7 @@ public class DatabaseHandler extends Configs {
 
     }
 
-    public void removeTaskFromDb(userTask userTask) {
+    public void removeTaskFromDb(UserTask userTask) {
         String delete = "DELETE FROM " + Const.TASKS_TABLE + "_" + User.getCurrentId() + " WHERE " + Const.TASKS_ID + " = " + "\"" + userTask.getId() + "\"";
 
         try {

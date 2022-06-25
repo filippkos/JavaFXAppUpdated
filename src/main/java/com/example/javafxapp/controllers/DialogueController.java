@@ -3,7 +3,7 @@ package com.example.javafxapp.controllers;
 import com.example.javafxapp.models.DatabaseHandler;
 import com.example.javafxapp.models.DateTimeHandler;
 import com.example.javafxapp.models.TaskState;
-import com.example.javafxapp.models.userTask;
+import com.example.javafxapp.models.UserTask;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -50,7 +50,7 @@ public class DialogueController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy  HH:mm");
         String deadlineString = deadline.format(formatter);
         DatabaseHandler dbHandler = new DatabaseHandler();
-        userTask userTask = new userTask(text, deadlineString);
+        UserTask userTask = new UserTask(text, deadlineString);
         dbHandler.addTaskToDb(userTask, deadline);
         addTheLastUserTaskToList();
     }
@@ -62,7 +62,7 @@ public class DialogueController {
         try {
             while (rs.next()) {
                 if (rs.getString("state").equals(TaskState.CURRENT.getTitle())) {
-                    AppController.currentUserTasks.add(new userTask(rs.getInt("idtask"),
+                    AppController.currentUserTasks.add(new UserTask(rs.getInt("idtask"),
                             rs.getString("task"),
                             rs.getString("state"),
                             rs.getDate("startdate").toLocalDate().atTime(LocalTime.now()).format(formatter),
